@@ -42,3 +42,14 @@ def remover(app):
     CUR.execute("DELETE FROM data WHERE app = ?", (app,))
     CON.commit()
     CON.close()
+
+def atualizar(app_antigo, novo_app, novo_usuario, nova_senha):
+    CON = conectar()
+    cursor = CON.cursor()
+    cursor.execute("""
+        UPDATE data
+        SET app=?, nome=?, senha=?
+        WHERE app=?
+    """, (novo_app, novo_usuario, nova_senha, app_antigo))
+    CON.commit()
+    CON.close()
