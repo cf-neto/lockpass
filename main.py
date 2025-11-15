@@ -45,7 +45,20 @@ def main(page):
                             ft.DataCell(ft.Text(usuario, color="white")),
                             ft.DataCell(ft.Text(senha, color="white")),
                             ft.DataCell(
-                                ft.IconButton(icon=ft.Icons.DELETE, icon_color="red", on_click=remover_item)
+                                ft.Row(
+                                    controls=[
+                                        ft.IconButton(
+                                            icon=ft.Icons.EDIT,
+                                            icon_color="yellow",
+                                            on_click=lambda e, app_nome=app, usuario_nome=usuario, senha_nome=senha: editar_item(e, app_nome, usuario_nome, senha_nome)
+                                        ),
+                                        ft.IconButton(
+                                            icon=ft.Icons.DELETE,
+                                            icon_color="red",
+                                            on_click=lambda e, app_nome=app: remover_item(e, app_nome)
+                                        )
+                                    ]
+                                )
                             )
                         ],
                         color=row_color
