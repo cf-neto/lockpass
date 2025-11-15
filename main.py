@@ -1,5 +1,5 @@
 import flet as ft
-from data.database import criar_tabela, listar, inserir, remover
+from data.database import criar_tabela, listar, inserir, remover, atualizar
 
 def main(page):
     # CONFIGURAÇÕES DA PÁGINA
@@ -52,6 +52,16 @@ def main(page):
                     )
                 )
         page.update()
+    
+    def editar_item(e, app_nome, usuario_nome, senha_nome):
+        novo_app.value = app_nome
+        novo_usuario.value = usuario_nome
+        nova_senha.value = senha_nome
+
+        # Armazena o item original para atualizar depois
+        page.session.set("edit_item", app_nome)
+
+        page.go("/add")
 
     
     # INPUT
@@ -94,10 +104,19 @@ def main(page):
                         ft.DataCell(ft.Text(usuario, color="white")),
                         ft.DataCell(ft.Text(senha, color="white")),
                         ft.DataCell(
-                            ft.IconButton(
-                                icon=ft.Icons.DELETE,
-                                icon_color="red",
-                                on_click=remover_item
+                            ft.Row(
+                                controls=[
+                                    ft.IconButton(
+                                        icon=ft.Icons.EDIT,
+                                        icon_color="yellow",
+                                        on_click=lambda e, app_nome=app, usuario_nome=usuario, senha_nome=senha: editar_item(e, app_nome, usuario_nome, senha_nome)
+                                    ),
+                                    ft.IconButton(
+                                        icon=ft.Icons.DELETE,
+                                        icon_color="red",
+                                        on_click=lambda e, app_nome=app: remover_item(e, app_nome)
+                                    )
+                                ]
                             )
                         )
                     ],
@@ -167,8 +186,14 @@ def main(page):
     )
 
     def salvar(e):
+        item_antigo = page.session.get("edit_item")
         if novo_app.value and novo_usuario.value.strip() and nova_senha.value.strip() != "":
-            inserir(novo_app.value, novo_usuario.value, nova_senha.value)
+            if item_antigo:
+                atualizar(item_antigo, novo_app.value, novo_usuario.value, nova_senha.value)
+                page.session.set("edit_item", None)
+            else:
+                inserir(novo_app.value, novo_usuario.value, nova_senha.value)
+                
             novo_app.value = ""
             novo_usuario.value = ""
             nova_senha.value = ""
